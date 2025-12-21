@@ -1,0 +1,107 @@
+/* ===== GLOBAL ===== */
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #1b2735, #090a0f);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== HEADING ===== */
+h1 {
+    margin-top: 30px;
+    font-size: 2.4rem;
+    background: linear-gradient(90deg, #4f7cff, #7cffcb);
+
+    background-clip: text;              /* ✅ standard */
+    -webkit-background-clip: text;      /* ✅ webkit */
+
+    color: transparent;                 /* ✅ standard */
+    -webkit-text-fill-color: transparent;
+}
+
+
+/* ===== CONTROLS ===== */
+.controls {
+    margin: 15px 0 25px;
+}
+
+button {
+    background: linear-gradient(135deg, #4f7cff, #3b5bdb);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    margin: 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(79, 124, 255, 0.35);
+    transition: 0.25s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== GRID ===== */
+#grid {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    grid-template-rows: repeat(10, 40px);
+    gap: 4px;
+    margin-bottom: 40px;
+}
+
+/* ===== CELL ===== */
+.cell {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ===== ROBOTS ===== */
+.agent {
+    border-radius: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* ===== PATH & TARGET ===== */
+.path {
+    background-color: rgba(79, 124, 255, 0.35);
+}
+
+.target {
+    background-color: #ffd43b !important;
+}
+
+/* ===== ROBOT SELECTOR ===== */
+.selector {
+    position: fixed;
+    bottom: 30px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 16px 22px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+.selector p {
+    margin: 0 0 10px;
+}
+
+.selector button {
+    margin: 5px;
+}
+
+.hidden {
+    display: none;
+}
