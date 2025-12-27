@@ -1,8 +1,9 @@
 # Multi-Agent Coordination Simulator
 
-An interactive web-based simulator that demonstrates multi-agent coordination and navigation on a grid using path planning and obstacle avoidance.
+## 📌 Overview
 
-Users can dynamically assign goals to agents, visualize their planned paths, and observe collision-free movement in real time.
+A web-based simulator to visualize coordination between multiple agents 
+on a grid environment.
 
 ---
 
@@ -39,6 +40,11 @@ This approach guarantees:
 - **Algorithm** – Breadth-First Search (BFS)
 
 ---
+
+## 📸 Demo
+<img width="890" height="793" alt="Screenshot 2025-12-27 191415" src="https://github.com/user-attachments/assets/7fd02ebd-d74a-434c-a35b-a0accc2ea6f3" />
+<img width="1920" height="819" alt="Screenshot 2025-12-27 191424" src="https://github.com/user-attachments/assets/07159b22-1b48-4a9e-9dfc-ddea69313b33" />
+
 
 ## ▶️ How to Run Locally
 
