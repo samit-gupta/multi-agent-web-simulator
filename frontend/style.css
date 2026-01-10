@@ -62,6 +62,19 @@ select option {
     color: white;
 }
 
+/* ===== RANGE SLIDER (AGENT COUNT) ===== */
+input[type="range"] {
+    accent-color: #7cffcb;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.controls span {
+    margin-left: 6px;
+    font-weight: 600;
+    color: #7cffcb;
+}
+
 /* ===== GRID ===== */
 #grid {
     display: grid;
