@@ -94,6 +94,7 @@ The simulator visually and numerically demonstrates these trade-offs.
 
 ```bash
 git clone https://github.com/samit-gupta/multi-agent-web-simulator
+```
 
 ---
 
