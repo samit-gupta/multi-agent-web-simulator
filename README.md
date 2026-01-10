@@ -1,53 +1,95 @@
-# Multi-Agent Coordination Simulator
+# 🚀 Scalable Multi-Agent Path Planning Simulator
+
+A web-based simulation platform to **design, visualize, and benchmark classical path-planning algorithms**
+(**BFS** and **A\***) in a **scalable multi-agent grid environment**.
+
+---
 
 ## 📌 Overview
 
-A web-based simulator to visualize coordination between multiple agents 
-on a grid environment.
+This project simulates multiple autonomous agents navigating a 2D grid while avoiding collisions.
+It allows real-time comparison of **Breadth-First Search (BFS)** and **A\*** under varying grid sizes and agent counts.
+
+The simulator focuses on **algorithmic trade-offs, scalability, and performance benchmarking**.
 
 ---
 
-## 🚀 Features
+## ✨ Key Features
 
-- Interactive grid-based environment
-- Two autonomous agents with unique identities
-- Click-to-assign targets using a modern UI (no prompts)
-- BFS-based path planning for navigation
-- Dynamic obstacle avoidance between agents
-- Real-time path visualization
-- Clean, modern, dark-themed UI
+### 🧠 Algorithms
+- Breadth-First Search (BFS)
+- A* Search with Manhattan distance heuristic
+
+### 🤖 Multi-Agent System
+- Dynamic agent count (1–10 agents)
+- Collision avoidance between agents
+- Independent path planning per agent
+
+### 📏 Scalability Controls
+- Grid size slider (10×10 → 30×30)
+- Agent count slider (1 → 10)
+
+### 📊 Algorithm Benchmarking (Core Feature)
+For every agent movement:
+- The selected algorithm executes visually
+- **Both BFS and A\*** are benchmarked internally
+- Execution times are displayed side-by-side
+
+| Agent | Selected Algorithm | Selected Time (ms) | BFS Time (ms) | A* Time (ms) |
+|------|-------------------|-------------------|--------------|-------------|
+
+This ensures fair comparison under identical conditions.
+
+### 🎨 Interactive UI
+- Click-to-assign target cells
+- Dynamic robot selector
+- Real-time grid visualization
+- Responsive design for large grids
 
 ---
 
-## 🧠 Algorithm Used
+## 🧩 System Design
 
-**Breadth-First Search (BFS)** is used for path planning.
+### Architecture
+- Agent abstraction encapsulates state and planning
+- Grid engine dynamically resizes and re-renders
+- Algorithm logic decoupled from UI
+- Benchmarking separated from movement logic
 
-Each agent computes the shortest collision-free path to the assigned target while treating other agents as dynamic obstacles. The planned path is visualized on the grid, and agents move step-by-step toward their goals.
+### Design Principles
+- Separation of concerns
+- Scalability-first approach
+- Reusable algorithm implementations
+- Clean and incremental Git history
 
-This approach guarantees:
-- Shortest path (if one exists)
-- Deterministic behavior
-- Reliable obstacle avoidance
+---
+
+## 🧪 Performance Insights
+
+- **BFS**
+  - Explores uniformly
+  - Higher node expansion on large grids
+  - Guarantees shortest path
+
+- **A\***
+  - Heuristic-guided exploration
+  - Fewer nodes visited
+  - Better scalability on larger grids
+
+The simulator visually and numerically demonstrates these trade-offs.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **HTML** – Structure
-- **CSS** – Modern UI & layout
-- **JavaScript** – Logic, simulation, and path planning
-- **Algorithm** – Breadth-First Search (BFS)
+- HTML5
+- CSS3
+- Vanilla JavaScript (no frameworks)
 
 ---
 
-## 📸 Demo
-<img width="890" height="793" alt="Screenshot 2025-12-27 191415" src="https://github.com/user-attachments/assets/7fd02ebd-d74a-434c-a35b-a0accc2ea6f3" />
-<img width="1920" height="819" alt="Screenshot 2025-12-27 191424" src="https://github.com/user-attachments/assets/07159b22-1b48-4a9e-9dfc-ddea69313b33" />
-
-
-## ▶️ How to Run Locally
+## ▶️ How to Run
 
 1. Clone the repository:
    ```bash
-   git clone <your-repo-link>
+   git clone https://github.com/samit-gupta/multi-agent-web-simulator
