@@ -94,3 +94,16 @@ The simulator visually and numerically demonstrates these trade-offs.
 
 ```bash
 git clone https://github.com/samit-gupta/multi-agent-web-simulator
+
+---
+
+## 📸 Screenshots
+
+### Small Grid (10×10)
+![Small Grid](screenshots/small-grid.png)
+
+### Large Grid (30×30)
+![Large Grid](screenshots/large-grid.png)
+
+### Algorithm Benchmarking Table
+![Metrics Table](screenshots/metrics-table.png)
