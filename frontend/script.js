@@ -1,7 +1,8 @@
 /********************
  * CONFIG & GLOBALS
  ********************/
-const GRID_SIZE = 10;
+let GRID_SIZE = 10;
+
 const grid = document.getElementById("grid");
 const selector = document.getElementById("robotSelector");
 const algoSelect = document.getElementById("algoSelect");
@@ -9,6 +10,8 @@ const metricsPanel = document.getElementById("metrics");
 const metricsBody = document.getElementById("metricsBody");
 const agentCountSlider = document.getElementById("agentCount");
 const agentCountLabel = document.getElementById("agentCountLabel");
+const gridSizeSlider = document.getElementById("gridSize");
+const gridSizeLabel = document.getElementById("gridSizeLabel");
 const robotButtonsContainer = document.getElementById("robotButtons");
 
 let cells = [];
@@ -19,25 +22,32 @@ let selectedTarget = null;
  * AGENT CLASS
  ********************/
 class Agent {
-    constructor(id, row, col, algorithm = "BFS") {
+    constructor(id, row, col) {
         this.id = id;
         this.row = row;
         this.col = col;
-        this.algorithm = algorithm;
         this.path = [];
-        this.target = null;
-        this.metrics = null;
     }
 
-    plan(gridSize) {
-        if (!this.target) return;
+    planAndBenchmark() {
+        const bfsResult = bfs(this.row, this.col, selectedTarget.row, selectedTarget.col, GRID_SIZE, this);
+        const astarResult = astar(this.row, this.col, selectedTarget.row, selectedTarget.col, GRID_SIZE, this);
 
-        this.metrics =
-            this.algorithm === "A_STAR"
-                ? astar(this.row, this.col, this.target.row, this.target.col, gridSize, this)
-                : bfs(this.row, this.col, this.target.row, this.target.col, gridSize, this);
+        const selectedAlgo = algoSelect.value;
+        const selectedResult = selectedAlgo === "A_STAR" ? astarResult : bfsResult;
 
-        this.path = this.metrics.path;
+        this.path = selectedResult.path;
+
+        metricsPanel.classList.remove("hidden");
+        metricsBody.innerHTML += `
+            <tr>
+                <td>${this.id}</td>
+                <td>${selectedAlgo}</td>
+                <td>${selectedResult.executionTime}</td>
+                <td>${bfsResult.executionTime}</td>
+                <td>${astarResult.executionTime}</td>
+            </tr>
+        `;
     }
 }
 
@@ -49,19 +59,12 @@ let agents = [];
 function generateAgents(count) {
     agents = [];
     for (let i = 0; i < count; i++) {
-        agents.push(
-            new Agent(
-                i + 1,
-                i % GRID_SIZE,
-                (GRID_SIZE - 1 - i) % GRID_SIZE,
-                "BFS"
-            )
-        );
+        agents.push(new Agent(i + 1, i % GRID_SIZE, (GRID_SIZE - 1 - i) % GRID_SIZE));
     }
 }
 
 /********************
- * ROBOT SELECTOR (DYNAMIC)
+ * ROBOT SELECTOR
  ********************/
 function updateRobotSelector() {
     robotButtonsContainer.innerHTML = "";
@@ -69,11 +72,9 @@ function updateRobotSelector() {
     agents.forEach(agent => {
         const btn = document.createElement("button");
         btn.textContent = `Robot ${agent.id}`;
-        btn.onclick = () => {
-            agent.algorithm = algoSelect.value;
-            agent.target = selectedTarget;
-            agent.plan(GRID_SIZE);
 
+        btn.onclick = () => {
+            agent.planAndBenchmark();
             selector.classList.add("hidden");
             selectedTarget = null;
         };
@@ -99,6 +100,9 @@ function isOccupied(r, c, curr) {
 function createGrid() {
     grid.innerHTML = "";
     cells = [];
+
+    grid.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 40px)`;
+    grid.style.gridTemplateRows = `repeat(${GRID_SIZE}, 40px)`;
 
     for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
         const cell = document.createElement("div");
@@ -134,24 +138,21 @@ function draw() {
 
     agents.forEach(a => {
         a.path.forEach(([r, c]) =>
-            cells[getIndex(r, c)].classList.add("path")
+            cells[getIndex(r, c)]?.classList.add("path")
         );
-
-        if (a.target)
-            cells[getIndex(a.target.row, a.target.col)].classList.add("target");
     });
 
     agents.forEach(a => {
         const cell = cells[getIndex(a.row, a.col)];
+        if (!cell) return;
         cell.classList.add("agent");
         cell.textContent = a.id;
-        cell.style.backgroundColor =
-            a.id % 2 === 0 ? "#ff6b6b" : "#4f7cff";
+        cell.style.backgroundColor = a.id % 2 === 0 ? "#ff6b6b" : "#4f7cff";
     });
 }
 
 /********************
- * BFS + A* (UNCHANGED)
+ * BFS
  ********************/
 function bfs(sr, sc, tr, tc, size, agent) {
     const startTime = performance.now();
@@ -160,13 +161,10 @@ function bfs(sr, sc, tr, tc, size, agent) {
     let q = [[sr, sc]];
     let visited = Array(size).fill().map(() => Array(size).fill(false));
     let parent = {};
-    let nodesVisited = 0;
-
     visited[sr][sc] = true;
 
     while (q.length) {
         let [r, c] = q.shift();
-        nodesVisited++;
         if (r === tr && c === tc) break;
 
         for (let [dr, dc] of dirs) {
@@ -180,48 +178,45 @@ function bfs(sr, sc, tr, tc, size, agent) {
         }
     }
 
-    let path = [];
-    let cur = [tr, tc];
-    while (!(cur[0] === sr && cur[1] === sc)) {
+    let path=[],cur=[tr,tc];
+    while (!(cur[0]===sr && cur[1]===sc)) {
         path.unshift(cur);
         cur = parent[`${cur[0]},${cur[1]}`];
-        if (!cur) return { path: [], nodesVisited, executionTime: 0 };
+        if (!cur) break;
     }
 
     return {
         path,
-        nodesVisited,
         executionTime: (performance.now() - startTime).toFixed(2)
     };
 }
 
+/********************
+ * A*
+ ********************/
 function heuristic(a, b) {
     return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]);
 }
 
 function astar(sr, sc, tr, tc, size, agent) {
     const startTime = performance.now();
-    let open = [[sr, sc]];
-    let parent = {};
-    let gScore = { [`${sr},${sc}`]: 0 };
-    let fScore = { [`${sr},${sc}`]: heuristic([sr,sc],[tr,tc]) };
-    let nodesVisited = 0;
+    let open=[[sr,sc]],parent={},g={},f={};
+    g[`${sr},${sc}`]=0;
+    f[`${sr},${sc}`]=heuristic([sr,sc],[tr,tc]);
 
     while (open.length) {
-        open.sort((a,b)=>fScore[`${a[0]},${a[1]}`]-fScore[`${b[0]},${b[1]}`]);
-        let [r,c] = open.shift();
-        nodesVisited++;
+        open.sort((a,b)=>f[`${a[0]},${a[1]}`]-f[`${b[0]},${b[1]}`]);
+        let [r,c]=open.shift();
         if (r===tr && c===tc) break;
 
         for (let [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]) {
             let nr=r+dr,nc=c+dc;
             if (nr<0||nc<0||nr>=size||nc>=size||isOccupied(nr,nc,agent)) continue;
-
-            let g = gScore[`${r},${c}`] + 1;
-            if (g < (gScore[`${nr},${nc}`] ?? Infinity)) {
-                parent[`${nr},${nc}`] = [r,c];
-                gScore[`${nr},${nc}`] = g;
-                fScore[`${nr},${nc}`] = g + heuristic([nr,nc],[tr,tc]);
+            let ng=g[`${r},${c}`]+1;
+            if (ng < (g[`${nr},${nc}`] ?? Infinity)) {
+                parent[`${nr},${nc}`]=[r,c];
+                g[`${nr},${nc}`]=ng;
+                f[`${nr},${nc}`]=ng+heuristic([nr,nc],[tr,tc]);
                 open.push([nr,nc]);
             }
         }
@@ -231,12 +226,11 @@ function astar(sr, sc, tr, tc, size, agent) {
     while (!(cur[0]===sr && cur[1]===sc)) {
         path.unshift(cur);
         cur = parent[`${cur[0]},${cur[1]}`];
-        if (!cur) return { path: [], nodesVisited, executionTime: 0 };
+        if (!cur) break;
     }
 
     return {
         path,
-        nodesVisited,
         executionTime: (performance.now() - startTime).toFixed(2)
     };
 }
@@ -247,9 +241,9 @@ function astar(sr, sc, tr, tc, size, agent) {
 function moveAgents() {
     agents.forEach(a => {
         if (!a.path.length) return;
-        let [r,c] = a.path[0];
+        let [r,c] = a.path.shift();
         if (!isOccupied(r,c,a)) {
-            a.row=r; a.col=c; a.path.shift();
+            a.row=r; a.col=c;
         }
     });
     draw();
@@ -260,6 +254,14 @@ function moveAgents() {
  ********************/
 agentCountSlider.oninput = () => agentCountLabel.textContent = agentCountSlider.value;
 
+gridSizeSlider.oninput = () => {
+    GRID_SIZE = Number(gridSizeSlider.value);
+    gridSizeLabel.textContent = `${GRID_SIZE} × ${GRID_SIZE}`;
+    generateAgents(Number(agentCountSlider.value));
+    createGrid();
+    draw();
+};
+
 startBtn.onclick = () => {
     if (!intervalId) intervalId = setInterval(moveAgents, 300);
 };
@@ -267,7 +269,7 @@ startBtn.onclick = () => {
 resetBtn.onclick = () => {
     clearInterval(intervalId);
     intervalId = null;
-    metricsBody.innerHTML="";
+    metricsBody.innerHTML = "";
     metricsPanel.classList.add("hidden");
     generateAgents(Number(agentCountSlider.value));
     createGrid();
@@ -277,6 +279,7 @@ resetBtn.onclick = () => {
 /********************
  * INIT
  ********************/
+gridSizeLabel.textContent = `${GRID_SIZE} × ${GRID_SIZE}`;
 generateAgents(Number(agentCountSlider.value));
 createGrid();
 draw();
