@@ -2,16 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Multi-Agent Coordination Simulator</title>
+    <title>Scalable Multi-Agent Path Planning Simulator</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <h1>Multi-Agent Coordination Simulator</h1>
+    <h1>Scalable Multi-Agent Path Planning Simulator</h1>
 
     <div class="controls">
         <button id="startBtn">Start Simulation</button>
         <button id="resetBtn">Reset</button>
+
+        <!-- Algorithm Selector -->
+        <label style="margin-left: 20px;">
+            Algorithm:
+            <select id="algoSelect">
+                <option value="BFS">BFS</option>
+                <option value="A_STAR">A*</option>
+            </select>
+        </label>
+
+        <!-- Agent Count Selector -->
+        <label style="margin-left: 20px;">
+            Agents:
+            <input type="range" id="agentCount" min="1" max="10" value="2">
+            <span id="agentCountLabel">2</span>
+        </label>
     </div>
 
     <div id="grid"></div>
@@ -21,6 +37,23 @@
         <p>Send which robot?</p>
         <button data-robot="1">Robot 1</button>
         <button data-robot="2">Robot 2</button>
+    </div>
+
+    <!-- Metrics Panel -->
+    <div id="metrics" class="metrics hidden">
+        <h3>Performance Metrics</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Agent</th>
+                    <th>Algorithm</th>
+                    <th>Path Length</th>
+                    <th>Nodes Visited</th>
+                    <th>Time (ms)</th>
+                </tr>
+            </thead>
+            <tbody id="metricsBody"></tbody>
+        </table>
     </div>
 
     <script src="script.js"></script>

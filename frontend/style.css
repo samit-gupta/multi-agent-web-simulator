@@ -14,18 +14,18 @@ h1 {
     margin-top: 30px;
     font-size: 2.4rem;
     background: linear-gradient(90deg, #4f7cff, #7cffcb);
-
-    background-clip: text;              /* ✅ standard */
-    -webkit-background-clip: text;      /* ✅ webkit */
-
-    color: transparent;                 /* ✅ standard */
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
     -webkit-text-fill-color: transparent;
 }
-
 
 /* ===== CONTROLS ===== */
 .controls {
     margin: 15px 0 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 button {
@@ -33,7 +33,6 @@ button {
     color: white;
     border: none;
     padding: 10px 22px;
-    margin: 0 6px;
     font-size: 15px;
     font-weight: 600;
     border-radius: 10px;
@@ -44,6 +43,23 @@ button {
 
 button:hover {
     transform: translateY(-2px);
+}
+
+/* ===== ALGORITHM SELECT ===== */
+select {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+}
+
+select option {
+    background: #1b2735;
+    color: white;
 }
 
 /* ===== GRID ===== */
@@ -62,6 +78,7 @@ button:hover {
     background-color: rgba(255, 255, 255, 0.08);
     border-radius: 8px;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 /* ===== ROBOTS ===== */
@@ -102,6 +119,52 @@ button:hover {
     margin: 5px;
 }
 
+/* ===== METRICS PANEL ===== */
+.metrics {
+    width: 90%;
+    max-width: 700px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+}
+
+.metrics h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
+    font-size: 1.2rem;
+    color: #7cffcb;
+}
+
+/* ===== METRICS TABLE ===== */
+.metrics table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.metrics thead {
+    background: rgba(79, 124, 255, 0.25);
+}
+
+.metrics th,
+.metrics td {
+    padding: 10px;
+    text-align: center;
+}
+
+.metrics th {
+    color: #dbe4ff;
+    font-weight: 600;
+}
+
+.metrics tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ===== UTIL ===== */
 .hidden {
     display: none;
 }
