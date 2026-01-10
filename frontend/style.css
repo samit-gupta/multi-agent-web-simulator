@@ -25,7 +25,8 @@ h1 {
     margin: 15px 0 25px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    flex-wrap: wrap; /* ✅ prevents overflow */
 }
 
 button {
@@ -45,7 +46,7 @@ button:hover {
     transform: translateY(-2px);
 }
 
-/* ===== ALGORITHM SELECT ===== */
+/* ===== SELECT & SLIDERS ===== */
 select {
     background: rgba(255, 255, 255, 0.08);
     color: white;
@@ -62,7 +63,6 @@ select option {
     color: white;
 }
 
-/* ===== RANGE SLIDER (AGENT COUNT) ===== */
 input[type="range"] {
     accent-color: #7cffcb;
     cursor: pointer;
@@ -75,33 +75,34 @@ input[type="range"] {
     color: #7cffcb;
 }
 
-/* ===== GRID ===== */
+/* ===== GRID (RESPONSIVE) ===== */
 #grid {
     display: grid;
-    grid-template-columns: repeat(10, 40px);
-    grid-template-rows: repeat(10, 40px);
     gap: 4px;
     margin-bottom: 40px;
+    max-width: 90vw;       /* ✅ prevents overflow */
+    overflow: auto;        /* ✅ scroll for 30×30 */
 }
 
-/* ===== CELL ===== */
+/* ===== CELL (AUTO-SCALE SAFE) ===== */
 .cell {
-    width: 40px;
-    height: 40px;
+    width: 36px;           /* slightly smaller */
+    height: 36px;
     background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 /* ===== ROBOTS ===== */
 .agent {
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    font-size: 13px;
 }
 
 /* ===== PATH & TARGET ===== */
@@ -122,6 +123,7 @@ input[type="range"] {
     border-radius: 14px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
     text-align: center;
+    max-width: 90vw;
 }
 
 .selector p {
@@ -135,7 +137,7 @@ input[type="range"] {
 /* ===== METRICS PANEL ===== */
 .metrics {
     width: 90%;
-    max-width: 700px;
+    max-width: 800px;
     margin-bottom: 40px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 14px;
