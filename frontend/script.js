@@ -7,6 +7,8 @@ const selector = document.getElementById("robotSelector");
 const algoSelect = document.getElementById("algoSelect");
 const metricsPanel = document.getElementById("metrics");
 const metricsBody = document.getElementById("metricsBody");
+const agentCountSlider = document.getElementById("agentCount");
+const agentCountLabel = document.getElementById("agentCountLabel");
 
 let cells = [];
 let intervalId = null;
@@ -39,12 +41,23 @@ class Agent {
 }
 
 /********************
- * AGENTS
+ * AGENT GENERATION
  ********************/
-let agents = [
-    new Agent(1, 0, 0, "BFS"),
-    new Agent(2, 9, 9, "A_STAR")
-];
+let agents = [];
+
+function generateAgents(count) {
+    agents = [];
+    for (let i = 0; i < count; i++) {
+        agents.push(
+            new Agent(
+                i + 1,
+                i % GRID_SIZE,
+                (GRID_SIZE - 1 - i) % GRID_SIZE,
+                "BFS"
+            )
+        );
+    }
+}
 
 /********************
  * HELPERS
@@ -108,7 +121,8 @@ function draw() {
         const cell = cells[getIndex(a.row, a.col)];
         cell.classList.add("agent");
         cell.textContent = a.id;
-        cell.style.backgroundColor = a.id === 1 ? "#4f7cff" : "#ff6b6b";
+        cell.style.backgroundColor =
+            a.id % 2 === 0 ? "#ff6b6b" : "#4f7cff";
     });
 }
 
@@ -265,13 +279,17 @@ function moveAgents() {
 /********************
  * UI CONTROLS
  ********************/
+agentCountSlider.oninput = () => {
+    agentCountLabel.textContent = agentCountSlider.value;
+};
+
 document.querySelectorAll("#robotSelector button").forEach(btn => {
     btn.onclick = () => {
         const id = Number(btn.dataset.robot);
         const agent = agents.find(a => a.id === id);
 
         if (agent && selectedTarget) {
-            agent.algorithm = algoSelect.value; // 🔥 HTML integration
+            agent.algorithm = algoSelect.value;
             agent.target = selectedTarget;
             agent.plan(GRID_SIZE);
         }
@@ -292,11 +310,7 @@ resetBtn.onclick = () => {
     metricsBody.innerHTML = "";
     metricsPanel.classList.add("hidden");
 
-    agents = [
-        new Agent(1, 0, 0, "BFS"),
-        new Agent(2, 9, 9, "A_STAR")
-    ];
-
+    generateAgents(Number(agentCountSlider.value));
     createGrid();
     draw();
 };
@@ -304,5 +318,6 @@ resetBtn.onclick = () => {
 /********************
  * INIT
  ********************/
+generateAgents(Number(agentCountSlider.value));
 createGrid();
 draw();
