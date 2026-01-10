@@ -28,6 +28,13 @@
             <input type="range" id="agentCount" min="1" max="10" value="2">
             <span id="agentCountLabel">2</span>
         </label>
+
+        <!-- Grid Size Selector -->
+        <label style="margin-left: 20px;">
+            Grid:
+            <input type="range" id="gridSize" min="10" max="30" step="5" value="10">
+            <span id="gridSizeLabel">10 × 10</span>
+        </label>
     </div>
 
     <div id="grid"></div>
@@ -38,18 +45,17 @@
         <div id="robotButtons"></div>
     </div>
 
-
     <!-- Metrics Panel -->
     <div id="metrics" class="metrics hidden">
-        <h3>Performance Metrics</h3>
+        <h3>Algorithm Performance Comparison</h3>
         <table>
             <thead>
                 <tr>
                     <th>Agent</th>
-                    <th>Algorithm</th>
-                    <th>Path Length</th>
-                    <th>Nodes Visited</th>
-                    <th>Time (ms)</th>
+                    <th>Selected Algo</th>
+                    <th>Selected Time (ms)</th>
+                    <th>BFS Time (ms)</th>
+                    <th>A* Time (ms)</th>
                 </tr>
             </thead>
             <tbody id="metricsBody"></tbody>
