@@ -108,3 +108,37 @@ git clone https://github.com/samit-gupta/multi-agent-web-simulator
 
 ### Algorithm Benchmarking Table
 ![Metrics Table](screenshots/metrics-table.png)
+
+---
+
+## 🎯 Learning Outcomes
+
+- Developed a strong understanding of **graph traversal algorithms** such as **BFS** and **A\*** through practical implementation  
+- Learned to compare algorithms using **real performance metrics** instead of theoretical analysis alone  
+- Designed a **scalable multi-agent system** with collision avoidance and independent planning  
+- Gained experience in **benchmarking algorithms under identical conditions**  
+- Improved skills in **clean frontend system design** using vanilla JavaScript  
+- Understood **time–space trade-offs** and how heuristics impact search efficiency  
+
+---
+
+## 👤 Author
+
+**Samit Gupta**  
+B.Tech Computer Science and Engineering  
+
+- GitHub: https://github.com/samit-gupta  
+- LinkedIn: https://linkedin.com/in/samit-gupta  
+
+---
+
+## 🏆 Why This Project Matters
+
+This project goes beyond implementing path-finding algorithms by focusing on **scalability, benchmarking, and system behavior**.
+
+Instead of only visualizing paths, it:
+- Compares **BFS vs A\*** under identical grid and agent conditions  
+- Measures execution time and node exploration objectively  
+- Demonstrates how algorithm choice impacts performance as scale increases  
+
+These concepts are highly relevant to **software engineering internships**, where understanding **trade-offs, performance, and system design** is more important than isolated algorithm knowledge.
