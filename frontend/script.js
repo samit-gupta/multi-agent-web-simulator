@@ -9,6 +9,7 @@ const metricsPanel = document.getElementById("metrics");
 const metricsBody = document.getElementById("metricsBody");
 const agentCountSlider = document.getElementById("agentCount");
 const agentCountLabel = document.getElementById("agentCountLabel");
+const robotButtonsContainer = document.getElementById("robotButtons");
 
 let cells = [];
 let intervalId = null;
@@ -60,6 +61,28 @@ function generateAgents(count) {
 }
 
 /********************
+ * ROBOT SELECTOR (DYNAMIC)
+ ********************/
+function updateRobotSelector() {
+    robotButtonsContainer.innerHTML = "";
+
+    agents.forEach(agent => {
+        const btn = document.createElement("button");
+        btn.textContent = `Robot ${agent.id}`;
+        btn.onclick = () => {
+            agent.algorithm = algoSelect.value;
+            agent.target = selectedTarget;
+            agent.plan(GRID_SIZE);
+
+            selector.classList.add("hidden");
+            selectedTarget = null;
+        };
+
+        robotButtonsContainer.appendChild(btn);
+    });
+}
+
+/********************
  * HELPERS
  ********************/
 function getIndex(r, c) {
@@ -86,6 +109,7 @@ function createGrid() {
                 row: Math.floor(i / GRID_SIZE),
                 col: i % GRID_SIZE
             };
+            updateRobotSelector();
             selector.classList.remove("hidden");
         };
 
@@ -127,7 +151,7 @@ function draw() {
 }
 
 /********************
- * BFS WITH METRICS
+ * BFS + A* (UNCHANGED)
  ********************/
 function bfs(sr, sc, tr, tc, size, agent) {
     const startTime = performance.now();
@@ -143,19 +167,15 @@ function bfs(sr, sc, tr, tc, size, agent) {
     while (q.length) {
         let [r, c] = q.shift();
         nodesVisited++;
-
         if (r === tr && c === tc) break;
 
         for (let [dr, dc] of dirs) {
             let nr = r + dr, nc = c + dc;
-            if (
-                nr >= 0 && nc >= 0 && nr < size && nc < size &&
-                !visited[nr][nc] &&
-                !isOccupied(nr, nc, agent)
-            ) {
+            if (nr>=0 && nc>=0 && nr<size && nc<size &&
+                !visited[nr][nc] && !isOccupied(nr,nc,agent)) {
                 visited[nr][nc] = true;
-                parent[`${nr},${nc}`] = [r, c];
-                q.push([nr, nc]);
+                parent[`${nr},${nc}`] = [r,c];
+                q.push([nr,nc]);
             }
         }
     }
@@ -168,136 +188,77 @@ function bfs(sr, sc, tr, tc, size, agent) {
         if (!cur) return { path: [], nodesVisited, executionTime: 0 };
     }
 
-    const endTime = performance.now();
-
     return {
         path,
         nodesVisited,
-        executionTime: (endTime - startTime).toFixed(2)
+        executionTime: (performance.now() - startTime).toFixed(2)
     };
 }
 
-/********************
- * A* WITH METRICS
- ********************/
 function heuristic(a, b) {
-    return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
+    return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]);
 }
 
 function astar(sr, sc, tr, tc, size, agent) {
     const startTime = performance.now();
     let open = [[sr, sc]];
     let parent = {};
-    let gScore = {};
-    let fScore = {};
+    let gScore = { [`${sr},${sc}`]: 0 };
+    let fScore = { [`${sr},${sc}`]: heuristic([sr,sc],[tr,tc]) };
     let nodesVisited = 0;
 
-    gScore[`${sr},${sc}`] = 0;
-    fScore[`${sr},${sc}`] = heuristic([sr, sc], [tr, tc]);
-
     while (open.length) {
-        open.sort((a, b) =>
-            fScore[`${a[0]},${a[1]}`] - fScore[`${b[0]},${b[1]}`]
-        );
-
-        let [r, c] = open.shift();
+        open.sort((a,b)=>fScore[`${a[0]},${a[1]}`]-fScore[`${b[0]},${b[1]}`]);
+        let [r,c] = open.shift();
         nodesVisited++;
+        if (r===tr && c===tc) break;
 
-        if (r === tr && c === tc) break;
+        for (let [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+            let nr=r+dr,nc=c+dc;
+            if (nr<0||nc<0||nr>=size||nc>=size||isOccupied(nr,nc,agent)) continue;
 
-        for (let [dr, dc] of [[1,0],[-1,0],[0,1],[0,-1]]) {
-            let nr = r + dr, nc = c + dc;
-            if (
-                nr < 0 || nc < 0 || nr >= size || nc >= size ||
-                isOccupied(nr, nc, agent)
-            ) continue;
-
-            let tentative = gScore[`${r},${c}`] + 1;
-            let key = `${nr},${nc}`;
-
-            if (tentative < (gScore[key] ?? Infinity)) {
-                parent[key] = [r, c];
-                gScore[key] = tentative;
-                fScore[key] = tentative + heuristic([nr, nc], [tr, tc]);
-                if (!open.some(p => p[0] === nr && p[1] === nc))
-                    open.push([nr, nc]);
+            let g = gScore[`${r},${c}`] + 1;
+            if (g < (gScore[`${nr},${nc}`] ?? Infinity)) {
+                parent[`${nr},${nc}`] = [r,c];
+                gScore[`${nr},${nc}`] = g;
+                fScore[`${nr},${nc}`] = g + heuristic([nr,nc],[tr,tc]);
+                open.push([nr,nc]);
             }
         }
     }
 
-    let path = [];
-    let cur = [tr, tc];
-    while (!(cur[0] === sr && cur[1] === sc)) {
+    let path=[],cur=[tr,tc];
+    while (!(cur[0]===sr && cur[1]===sc)) {
         path.unshift(cur);
         cur = parent[`${cur[0]},${cur[1]}`];
         if (!cur) return { path: [], nodesVisited, executionTime: 0 };
     }
 
-    const endTime = performance.now();
-
     return {
         path,
         nodesVisited,
-        executionTime: (endTime - startTime).toFixed(2)
+        executionTime: (performance.now() - startTime).toFixed(2)
     };
 }
 
 /********************
- * MOVEMENT + METRICS
+ * MOVEMENT
  ********************/
 function moveAgents() {
     agents.forEach(a => {
         if (!a.path.length) return;
-
-        let [r, c] = a.path[0];
-        if (!isOccupied(r, c, a)) {
-            a.row = r;
-            a.col = c;
-            a.path.shift();
-        }
-
-        if (!a.path.length && a.metrics) {
-            metricsPanel.classList.remove("hidden");
-
-            metricsBody.innerHTML += `
-                <tr>
-                    <td>${a.id}</td>
-                    <td>${a.algorithm}</td>
-                    <td>${a.metrics.path.length}</td>
-                    <td>${a.metrics.nodesVisited}</td>
-                    <td>${a.metrics.executionTime}</td>
-                </tr>
-            `;
-
-            a.target = null;
+        let [r,c] = a.path[0];
+        if (!isOccupied(r,c,a)) {
+            a.row=r; a.col=c; a.path.shift();
         }
     });
-
     draw();
 }
 
 /********************
- * UI CONTROLS
+ * UI
  ********************/
-agentCountSlider.oninput = () => {
-    agentCountLabel.textContent = agentCountSlider.value;
-};
-
-document.querySelectorAll("#robotSelector button").forEach(btn => {
-    btn.onclick = () => {
-        const id = Number(btn.dataset.robot);
-        const agent = agents.find(a => a.id === id);
-
-        if (agent && selectedTarget) {
-            agent.algorithm = algoSelect.value;
-            agent.target = selectedTarget;
-            agent.plan(GRID_SIZE);
-        }
-
-        selector.classList.add("hidden");
-        selectedTarget = null;
-    };
-});
+agentCountSlider.oninput = () => agentCountLabel.textContent = agentCountSlider.value;
 
 startBtn.onclick = () => {
     if (!intervalId) intervalId = setInterval(moveAgents, 300);
@@ -306,10 +267,8 @@ startBtn.onclick = () => {
 resetBtn.onclick = () => {
     clearInterval(intervalId);
     intervalId = null;
-
-    metricsBody.innerHTML = "";
+    metricsBody.innerHTML="";
     metricsPanel.classList.add("hidden");
-
     generateAgents(Number(agentCountSlider.value));
     createGrid();
     draw();
